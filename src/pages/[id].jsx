@@ -3,19 +3,54 @@ import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 
-export const getServerSideProps = ({ params }) => {
-  const fs = require("fs");
+// export const getServerSideProps = ({ params }) => {
+//   const fs = require("fs");
 
+//   const text = fs
+//     .readFileSync(`./public/${params.id}/text.txt`)
+//     .toString("utf-8");
+
+//   let images = fs.readdirSync(`./public/${params.id}/images`);
+//   images = images.map((item) => `./public/${params.id}/images/${item}`);
+//   console.log(images);
+
+//   const data = { text, images };
+
+//   return {
+//     props: { data },
+//   };
+// };
+
+export const getStaticPaths = () => {
+  const fs = require("fs");
+  const path = "./public"; // Путь к папке
+
+  // Получаем список папок
+  const folders = fs
+    .readdirSync(path, { withFileTypes: true })
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name);
+
+  const paths = folders.map((item) => {
+    return {
+      params: { id: item },
+    };
+  });
+  return {
+    paths,
+    fallback: false,
+  };
+};
+
+export const getStaticProps = ({ params }) => {
+  const fs = require("fs");
   const text = fs
     .readFileSync(`./public/${params.id}/text.txt`)
     .toString("utf-8");
-
   let images = fs.readdirSync(`./public/${params.id}/images`);
   images = images.map((item) => `./${params.id}/images/${item}`);
   console.log(images);
-
   const data = { text, images };
-
   return {
     props: { data },
   };
